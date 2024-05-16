@@ -17,7 +17,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.content.ContextCompat
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.pressuresensor.Screen.ConnectScreen
 import com.example.pressuresensor.Screen.ScanScreen
 import com.example.pressuresensor.ble.BleManager
 import com.example.pressuresensor.ui.theme.PressureSensorTheme
@@ -48,17 +51,16 @@ class MainActivity : ComponentActivity() {
                 ) {
                     val bleManager = BleManager(applicationContext)
                     val navController = rememberNavController()
-                    ScanScreen(navController = navController, bleManager = bleManager)
+                    NavHost(navController = navController, startDestination = "ScanScreen"){
+                        composable(route = "ScanScreen") {ScanScreen(navController = navController, bleManager = bleManager)}
+                        composable(route = "ConnectScreen") {ConnectScreen(navController = navController, bleManager = bleManager)}
+                    }
                 }
             }
         }
         if (Build.VERSION.SDK_INT >= 31) {
             if (permissionArray.all {
-                    ContextCompat.checkSelfPermission(
-                        this,
-                        it
-                    ) == PackageManager.PERMISSION_GRANTED
-                }) {
+                    ContextCompat.checkSelfPermission(this, it) == PackageManager.PERMISSION_GRANTED }) {
                 Toast.makeText(this, "권한 확인", Toast.LENGTH_SHORT).show()
             } else {
                 requestPermissionLauncher.launch(permissionArray)
